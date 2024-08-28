@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Score Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        select, button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .output {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fantasy Score Prediction</h1>
+    <div class="form-group">
+        <label for="venue">Venue:</label>
+        <select id="venue"></select>
+    </div>
+    <div class="form-group">
+        <label for="player_name">Player Name:</label>
+        <select id="player_name"></select>
+    </div>
+    <div class="form-group">
+        <label for="player_team">Player Team:</label>
+        <select id="player_team"></select>
+    </div>
+    <div class="form-group">
+        <label for="batting_first_team">Batting 1st Team:</label>
+        <select id="batting_first_team"></select>
+    </div>
+    <div class="form-group">
+        <label for="bowling_first_team">Bowling 1st Team:</label>
+        <select id="bowling_first_team"></select>
+    </div>
+    <button id="predictButton">Predict Score</button>
+
+    <div class="output" id="output"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch options from Flask backend
+            fetch('http://127.0.0.1:5000/options')
+                .then(response => response.json())
+                .then(data => {
+                    populateDropdown('venue', data.venues);
+                    populateDropdown('player_name', data.player_names);
+                    populateDropdown('player_team', data.player_teams);
+                    populateDropdown('batting_first_team', data.batting_first_teams);
+                    populateDropdown('bowling_first_team', data.bowling_first_teams);
+                })
+		.catch(error => {
+        		console.error('Error fetching dropdown options:', error);
+    		});
+
+            function populateDropdown(id, options) {
+                const dropdown = document.getElementById(id);
+		dropdown.innerHTML = '';
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    dropdown.appendChild(opt);
+                });
+            }
+
+            // Handle prediction button click
+            document.getElementById('predictButton').addEventListener('click', function () {
+                const venue = document.getElementById('venue').value;
+                const player_name = document.getElementById('player_name').value;
+                const player_team = document.getElementById('player_team').value;
+                const batting_first_team = document.getElementById('batting_first_team').value;
+                const bowling_first_team = document.getElementById('bowling_first_team').value;
+
+                const data = {
+                    venue: venue,
+                    player_name: player_name,
+                    player_team: player_team,
+                    batting_first_team: batting_first_team,
+                    bowling_first_team: bowling_first_team
+                };
+
+                fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const output = document.getElementById('output');
+                    output.textContent = `Predicted Fantasy Score: ${data.predicted_score}`;
+                })
+                .catch(error => {
+                    const output = document.getElementById('output');
+                    output.textContent = `Error: ${error}`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
