@@ -55,7 +55,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Fetch options from Flask backend
-            fetch('http://127.0.0.1:5000/options')
+            fetch('https://fantasy-score-kulk-amey.onrender.com/predict')
                 .then(response => response.json())
                 .then(data => {
                     populateDropdown('venue', data.venues);
@@ -95,7 +95,7 @@
                     bowling_first_team: bowling_first_team
                 };
 
-                fetch('http://127.0.0.1:5000/predict', {
+                fetch('https://fantasy-score-kulk-amey.onrender.com/predict', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
