@@ -24,7 +24,7 @@ def home():
 
 
 
-@app.route('/predict', methods=['POST'])
+@app.route('/', methods=['POST'])
 def predict():
     data = request.json
     input_data = pd.DataFrame({
@@ -42,7 +42,7 @@ def predict():
 
     return jsonify({'predicted_score': predicted_score[0]})
 
-@app.route('/options', methods=['GET'])
+@app.route('/', methods=['GET'])
 def options():
     return jsonify({
         'venues': df['venue'].unique().tolist(),
