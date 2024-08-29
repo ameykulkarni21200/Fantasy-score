@@ -13,6 +13,17 @@ with open('fantasy_score_model.pkl', 'rb') as f:
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for the entire Flask app
 
+
+@app.route('/')
+def home():
+    return "Hello, World!"
+
+
+
+
+
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
