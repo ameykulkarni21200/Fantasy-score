@@ -4,7 +4,8 @@ import pickle
 from flask_cors import CORS  # Import the CORS module
 
 # Load your data and model
-df = pd.read_csv('F:\\fantasy_scores.csv')
+#df = pd.read_csv('F:\\fantasy_scores.csv')
+df = pd.read_csv('fantasy_scores.csv')
 with open('fantasy_score_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
