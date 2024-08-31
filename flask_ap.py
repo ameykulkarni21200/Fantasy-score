@@ -6,8 +6,25 @@ from flask_cors import CORS  # Import the CORS module
 # Load your data and model
 #df = pd.read_csv('F:\\fantasy_scores.csv')
 df = pd.read_csv('fantasy_scores.csv')
-with open('fantasy_score_model.pkl', 'rb') as f:
+
+
+import os
+import requests
+
+MODEL_URL = 'https://drive.google.com/uc?export=download&id=1D1kPHNLC1MpVirOp-jhU3ViXkDJVUS_N'
+MODEL_PATH = 'fantasy_score_model.pkl'
+
+response = requests.get(MODEL_URL)
+with open(MODEL_PATH, 'wb') as f:
+    f.write(response.content)
+
+with open(MODEL_PATH, 'rb') as f:
     model = pickle.load(f)
+
+
+
+#with open('fantasy_score_model.pkl', 'rb') as f:
+    #model = pickle.load(f)
 
 # Create Flask app
 app = Flask(__name__)
