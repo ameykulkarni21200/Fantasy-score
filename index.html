@@ -55,7 +55,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Fetch options from Flask backend
-            fetch('https://fantasy-score-kulk-amey.onrender.com')
+            fetch('https://last-try-lope.onrender.com')
                 .then(response => response.json())
                 .then(data => {
                     populateDropdown('venue', data.venues);
@@ -95,7 +95,7 @@
                     bowling_first_team: bowling_first_team
                 };
 
-                fetch('https://fantasy-score-kulk-amey.onrender.com', {
+                fetch('https://last-try-lope.onrender.com', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
