@@ -1,45 +1,49 @@
 from flask import Flask, request, jsonify
 import pandas as pd
 import pickle
-from flask_cors import CORS  # Import the CORS module
-
-# Load your data and model
-#df = pd.read_csv('F:\\fantasy_scores.csv')
-df = pd.read_csv('fantasy_scores.csv')
-
-
 import os
 import requests
+from flask_cors import CORS
 
+# URL of your model stored on Google Drive
 MODEL_URL = 'https://drive.google.com/uc?export=download&id=1D1kPHNLC1MpVirOp-jhU3ViXkDJVUS_N'
 MODEL_PATH = 'fantasy_score_model.pkl'
 
-response = requests.get(MODEL_URL)
-with open(MODEL_PATH, 'wb') as f:
-    f.write(response.content)
+def download_model():
+    if not os.path.exists(MODEL_PATH):
+        print("Downloading model from Google Drive...")
+        with requests.Session() as session:
+            response = session.get(MODEL_URL, stream=True)
+            # Check if Google Drive sends a 'confirm' link for large files
+            if "text/html" in response.headers.get("content-type", ""):
+                # Parse the confirmation page and extract the download link
+                for key, value in response.cookies.items():
+                    if key.startswith('download_warning'):
+                        MODEL_URL_confirm = MODEL_URL + "&confirm=" + value
+                        response = session.get(MODEL_URL_confirm, stream=True)
+                        break
+            # Write the model file locally
+            with open(MODEL_PATH, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:  # Filter out keep-alive new chunks
+                        f.write(chunk)
+            print("Model downloaded successfully.")
 
+# Ensure the model is downloaded before starting the app
+download_model()
+
+# Load your data and model
+df = pd.read_csv('fantasy_scores.csv')
 with open(MODEL_PATH, 'rb') as f:
     model = pickle.load(f)
-
-
-
-#with open('fantasy_score_model.pkl', 'rb') as f:
-    #model = pickle.load(f)
 
 # Create Flask app
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for the entire Flask app
 
-
 @app.route('/')
 def home():
     return "Hello, World!"
-
-
-
-
-
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -71,4 +75,3 @@ def options():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True, use_reloader=False)
-
